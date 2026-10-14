@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, cn } from '@cloudflare/kumo';
 import { DirectionProvider } from '@cloudflare/kumo/primitives/direction-provider';
 import { DownloadSimpleIcon, PencilSimpleLineIcon, SimCardIcon } from '@phosphor-icons/react';
@@ -7,9 +7,8 @@ import { InstallGuide } from './components/InstallGuide';
 import { EMPTY_MANUAL, ManualForm, validateManual, type ManualValues } from './components/ManualForm';
 import { OperatorPicker } from './components/OperatorPicker';
 import { PageHero } from './components/PageHero';
-import { SafariBlocker } from './components/SafariBlocker';
+import { SafariTip } from './components/SafariTip';
 import { OPERATORS, type Operator } from './data/operators';
-import { detectBrowser } from './lib/browser';
 import { downloadProfile } from './lib/download';
 import { buildProfile, safeSlug } from './lib/mobileconfig';
 
@@ -20,8 +19,6 @@ type Mode = 'operator' | 'manual';
  * then follow the install steps.
  */
 export function App() {
-  const browser = useMemo(() => detectBrowser(), []);
-  const [devBypass, setDevBypass] = useState(false);
   const [mode, setMode] = useState<Mode>('operator');
   const [operator, setOperator] = useState<Operator | null>(OPERATORS[0]);
   const [manual, setManual] = useState<ManualValues>(EMPTY_MANUAL);
@@ -32,7 +29,6 @@ export function App() {
   const ready = mode === 'operator' ? operator !== null : Object.keys(validateManual(manual)).length === 0;
 
   const download = () => {
-    if (!browser.safari && !devBypass) return;
     if (mode === 'operator') {
       if (!operator) return;
       // A real file with the profile MIME type: Safari offers to install it.
@@ -64,11 +60,7 @@ export function App() {
       <div className="min-h-dvh bg-kumo-canvas">
         <Header />
         <main className="mx-auto max-w-xl space-y-5 px-4 pt-4 pb-16">
-          {!browser.safari && !devBypass ? (
-            <SafariBlocker browser={browser} onBypass={() => setDevBypass(true)} />
-          ) : (
-            <>
-              <PageHero title="پروفایل APN آیفون" description="اپراتورت را انتخاب کن یا تنظیمات را خودت وارد کن و پروفایل آماده را نصب کن." />
+          <PageHero title="پروفایل APN آیفون" description="اپراتورت را انتخاب کن یا تنظیمات را خودت وارد کن و پروفایل آماده را نصب کن." />
 
           {/* How to make the profile: two big choices */}
           <div className="grid grid-cols-2 gap-2.5" role="tablist">
@@ -148,9 +140,9 @@ export function App() {
           <div ref={guideRef} className="scroll-mt-20">
             <InstallGuide highlight={downloaded} />
           </div>
-        </>
-      )}
-    </main>
+
+          <SafariTip />
+        </main>
       </div>
     </DirectionProvider>
   );
