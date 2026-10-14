@@ -4,10 +4,11 @@ export interface BrowserInfo {
   safari: boolean;
 }
 
-const OTHER_IOS_BROWSERS = /CriOS|FxiOS|EdgiOS|OPiOS|OPT\/|YaBrowser|DuckDuckGo|GSA\/|Telegram|Instagram|FBAN|FBAV|Line\/|WhatsApp|Snapchat|Twitter/i;
+const OTHER_BROWSERS =
+  /CriOS|FxiOS|EdgiOS|OPiOS|OPT\/|YaBrowser|DuckDuckGo|GSA\/|Telegram|Instagram|FBAN|FBAV|Line\/|WhatsApp|Snapchat|Twitter|Chrome|Chromium|Edg|Firefox|OPR|Android/i;
 
 export function detectBrowser(ua = navigator.userAgent, touchPoints = navigator.maxTouchPoints ?? 0): BrowserInfo {
   const ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && touchPoints > 1);
-  const safari = ios && /Safari\//.test(ua) && !OTHER_IOS_BROWSERS.test(ua);
+  const safari = /Safari\//.test(ua) && /Version\//.test(ua) && !OTHER_BROWSERS.test(ua);
   return { ios, safari };
 }

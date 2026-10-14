@@ -77,7 +77,7 @@ export function buildProfile(input: ApnInput): string {
     str('PayloadIdentifier', id),
     str('PayloadUUID', profileUuid),
     str('PayloadDisplayName', input.displayName),
-    str('PayloadDescription', 'تنظیم APN با IPv4 و IPv6 فعال — گلاینت'),
+    str('PayloadDescription', 'APN configuration with IPv4 and IPv6 enabled – GlyNet'),
     str('PayloadOrganization', 'GlyNet'),
     '<key>PayloadRemovalDisallowed</key><false/>',
     '</dict>',

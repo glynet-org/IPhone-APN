@@ -7,7 +7,7 @@ import { InstallGuide } from './components/InstallGuide';
 import { EMPTY_MANUAL, ManualForm, validateManual, type ManualValues } from './components/ManualForm';
 import { OperatorPicker } from './components/OperatorPicker';
 import { PageHero } from './components/PageHero';
-import { SafariNotice } from './components/SafariNotice';
+import { SafariBlocker } from './components/SafariBlocker';
 import { OPERATORS, type Operator } from './data/operators';
 import { detectBrowser } from './lib/browser';
 import { downloadProfile } from './lib/download';
@@ -21,6 +21,7 @@ type Mode = 'operator' | 'manual';
  */
 export function App() {
   const browser = useMemo(() => detectBrowser(), []);
+  const [devBypass, setDevBypass] = useState(false);
   const [mode, setMode] = useState<Mode>('operator');
   const [operator, setOperator] = useState<Operator | null>(OPERATORS[0]);
   const [manual, setManual] = useState<ManualValues>(EMPTY_MANUAL);
@@ -31,7 +32,7 @@ export function App() {
   const ready = mode === 'operator' ? operator !== null : Object.keys(validateManual(manual)).length === 0;
 
   const download = () => {
-    if (browser.ios && !browser.safari && !window.confirm('این مرورگر نمی‌تواند پروفایل را نصب کند. صفحه را در Safari باز کنید. باز هم دانلود شود؟')) return;
+    if (!browser.safari && !devBypass) return;
     if (mode === 'operator') {
       if (!operator) return;
       // A real file with the profile MIME type: Safari offers to install it.
@@ -48,7 +49,7 @@ export function App() {
           username: manual.username.trim(),
           password: manual.password,
           authType: manual.authType,
-          displayName: manual.displayName.trim() || `APN ${apn} (IPv4/IPv6) – گلاینت`,
+          displayName: manual.displayName.trim() || `APN ${apn} (IPv4/IPv6) – GlyNet`,
           slug: `custom-${apn}`,
         }),
         `${safeSlug(apn)}.mobileconfig`,
@@ -63,9 +64,11 @@ export function App() {
       <div className="min-h-dvh bg-kumo-canvas">
         <Header />
         <main className="mx-auto max-w-xl space-y-5 px-4 pt-4 pb-16">
-          <SafariNotice browser={browser} />
-
-          <PageHero title="پروفایل APN آیفون" description="اپراتورت را انتخاب کن یا تنظیمات را خودت وارد کن و پروفایل آماده را نصب کن." />
+          {!browser.safari && !devBypass ? (
+            <SafariBlocker browser={browser} onBypass={() => setDevBypass(true)} />
+          ) : (
+            <>
+              <PageHero title="پروفایل APN آیفون" description="اپراتورت را انتخاب کن یا تنظیمات را خودت وارد کن و پروفایل آماده را نصب کن." />
 
           {/* How to make the profile: two big choices */}
           <div className="grid grid-cols-2 gap-2.5" role="tablist">
@@ -125,7 +128,7 @@ export function App() {
                 type="button"
                 className="px-1 text-sm font-medium text-kumo-link"
                 onClick={() => {
-                  if (operator) setManual({ ...EMPTY_MANUAL, apn: operator.apn, displayName: `APN ${operator.name} (IPv4/IPv6) – گلاینت` });
+                  if (operator) setManual({ ...EMPTY_MANUAL, apn: operator.apn, displayName: `${operator.nameEn} APN (IPv4/IPv6) – GlyNet` });
                   setMode('manual');
                 }}
               >
@@ -145,8 +148,9 @@ export function App() {
           <div ref={guideRef} className="scroll-mt-20">
             <InstallGuide highlight={downloaded} />
           </div>
-
-        </main>
+        </>
+      )}
+    </main>
       </div>
     </DirectionProvider>
   );

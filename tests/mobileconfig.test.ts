@@ -16,6 +16,7 @@ describe('buildProfile', () => {
   it('escapes user text and keeps a stable identifier', () => {
     expect(xml).toContain('APN &amp; &lt;test&gt;');
     expect(xml).toContain('<string>com.glynet.apn.mci</string>');
+    expect(xml).toContain('<string>APN configuration with IPv4 and IPv6 enabled – GlyNet</string>');
   });
   it('adds a proxy only when given', () => {
     expect(xml).not.toContain('ProxyServer');
@@ -32,6 +33,13 @@ it('stableUuid is stable and UUID-shaped', () => {
 describe('detectBrowser', () => {
   const safari = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
   it('Safari on iPhone', () => expect(detectBrowser(safari, 5)).toEqual({ ios: true, safari: true }));
+  it('Safari on Mac desktop', () =>
+    expect(
+      detectBrowser(
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15',
+        0,
+      ),
+    ).toEqual({ ios: false, safari: true }));
   it('Chrome on iPhone', () => expect(detectBrowser(safari.replace('Version/18.0', 'CriOS/130.0'), 5)).toEqual({ ios: true, safari: false }));
   it('Telegram in-app', () => expect(detectBrowser(safari.replace('Safari/604.1', 'Telegram'), 5).safari).toBe(false));
   it('Android', () => expect(detectBrowser('Mozilla/5.0 (Linux; Android 14) Chrome/130 Mobile Safari/537.36', 5).ios).toBe(false));

@@ -45,7 +45,7 @@ export function ManualForm({ values, onChange, showErrors }: { values: ManualVal
       <Input
         label="نام پروفایل"
         description="همان نامی که در تنظیمات آیفون دیده می‌شود."
-        placeholder={`APN ${values.apn || '…'} – گلاینت`}
+        placeholder={`APN ${values.apn || '…'} – GlyNet`}
         value={values.displayName}
         onChange={set('displayName')}
       />

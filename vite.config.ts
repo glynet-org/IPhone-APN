@@ -15,7 +15,7 @@ const operatorProfiles = (): Plugin => {
       buildProfile({
         apn: op.apn,
         slug: op.slug,
-        displayName: `APN ${op.name} (IPv4/IPv6) – گلاینت`,
+        displayName: `${op.nameEn} APN (IPv4/IPv6) – GlyNet`,
         uuids: [stableUuid(`${op.slug}-cellular`), stableUuid(`${op.slug}-profile`)],
       }),
     ]),
