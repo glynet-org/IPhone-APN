@@ -1,0 +1,310 @@
+@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
+@source './**/*.{ts,tsx}';
+@import "@cloudflare/kumo/styles/tailwind";
+@import "tailwindcss";
+
+@theme {
+    --font-sans: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/*
+ * GlyNet teal brand.
+ * Kumo's accent is blue: remap its brand/link/info tokens and Tailwind's blue scale
+ * (used as fallbacks inside Kumo, e.g. Switch) to teal. Unlayered, so it wins over Kumo's theme.
+ */
+:root,
+[data-mode='light'],
+[data-mode='dark'] {
+    --color-blue-50: oklch(98.4% 0.014 180.72);
+    --color-blue-100: oklch(95.3% 0.051 180.801);
+    --color-blue-200: oklch(91% 0.096 180.426);
+    --color-blue-300: oklch(85.5% 0.138 181.071);
+    --color-blue-400: oklch(77.7% 0.152 181.912);
+    --color-blue-500: oklch(70.4% 0.14 182.503);
+    --color-blue-600: oklch(60% 0.118 184.704);
+    --color-blue-700: oklch(51.1% 0.096 186.391);
+    --color-blue-800: oklch(43.7% 0.078 188.216);
+    --color-blue-900: oklch(38.6% 0.063 188.416);
+    --color-blue-950: oklch(27.7% 0.046 192.524);
+
+    --color-kumo-brand: light-dark(oklch(55% 0.105 184), oklch(60% 0.118 184.7));
+    --color-kumo-brand-hover: light-dark(oklch(49% 0.094 186.4), oklch(54% 0.108 185.5));
+    /* Kumo keeps a separate text colour for `text-kumo-brand` (Cloudflare orange); use the teal brand. */
+    --text-color-kumo-brand: var(--color-kumo-brand);
+    --text-color-kumo-link: light-dark(oklch(48% 0.09 187), oklch(77.7% 0.152 181.912));
+    --color-kumo-info: oklch(70.4% 0.14 182.503);
+    --text-color-kumo-info: light-dark(oklch(48% 0.09 187), oklch(77.7% 0.152 181.912));
+    --color-kumo-info-tint: light-dark(oklch(95.3% 0.051 180.801 / 0.6), oklch(43.7% 0.078 188.216 / 0.3));
+}
+
+/*
+ * Soft dark mode in Apple's style (macOS / iOS system greys) instead of Kumo's near-black:
+ * a #1c1c1e page, #2c2c2e cards, translucent hairlines and #f5f5f7 text, so contrast stays gentle.
+ */
+[data-mode='dark'] {
+    --color-kumo-canvas: #1c1c1e;
+    --color-kumo-recessed: #19191b;
+    --color-kumo-base: #2c2c2e;
+    --color-kumo-elevated: #333336;
+    --color-kumo-overlay: #2f2f31;
+    --color-kumo-control: #38383a;
+    --color-kumo-tint: #3a3a3c;
+    --color-kumo-fill: #3a3a3c;
+    --color-kumo-fill-hover: #48484a;
+    --color-kumo-interact: #545456;
+    --color-kumo-line: rgb(255 255 255 / 0.12);
+    --color-kumo-hairline: rgb(255 255 255 / 0.08);
+    --color-kumo-shadow-edge: rgb(255 255 255 / 0.06);
+    --color-kumo-shadow-drop: rgb(0 0 0 / 0.35);
+
+    --text-color-kumo-default: #f5f5f7;
+    --text-color-kumo-strong: #ffffff;
+    --text-color-kumo-subtle: #98989d;
+    --text-color-kumo-inactive: #636366;
+    --text-color-kumo-placeholder: #7c7c80;
+}
+
+/*
+ * Icon backgrounds (`.icon-bubble`) in dark mode: a soft, translucent tint of the icon's own colour
+ * (teal, red, green…) so the icon stands out on the dark greys without a glaring white disc.
+ */
+[data-mode='dark'] .icon-bubble {
+    background-color: color-mix(in oklch, currentColor 20%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, currentColor 28%, transparent);
+}
+
+/* Brand-coloured icons get a lighter teal on dark surfaces so they read clearly. */
+[data-mode='dark'] .brand-icon,
+[data-mode='dark'] .icon-bubble.text-kumo-brand {
+    color: oklch(80% 0.13 182);
+}
+
+/* Dark tabs as an Apple segmented control: translucent grey track, lighter selected pill. */
+[data-mode='dark'] .kumo-tabs-list.bg-kumo-recessed {
+    background-color: rgb(118 118 128 / 0.24);
+}
+[data-mode='dark'] .kumo-tabs-list.bg-kumo-recessed > [class*='--active-tab-width'] {
+    background-color: #636366;
+}
+
+html,
+body {
+    background-color: var(--color-kumo-canvas);
+    color: var(--text-color-kumo-default);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+    isolation: isolate;
+    min-height: 100dvh;
+}
+
+/* Latin-only fragments (links, codes, remarks) stay left-to-right inside RTL layouts */
+.ltr {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+/* Block-level Latin text (remarks, usernames) aligned with the surrounding layout direction */
+.ltr-text {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+[dir='rtl'] .ltr-text {
+    text-align: right;
+}
+
+/*
+ * Toast close button: Kumo pins it with a physical `right-2` and reserves no room for it,
+ * so in RTL it sits on top of the icon/title. Anchor it to the inline end, centre it on the
+ * title line, and keep text clear of it.
+ */
+[data-kumo-part='close'].absolute {
+    top: 1rem;
+    right: auto;
+    left: auto;
+    inset-inline-end: 0.75rem;
+}
+
+*:has(> [data-kumo-part='close'].absolute) {
+    padding-inline-end: 2.5rem;
+}
+
+/*
+ * Kumo's InputGroup (pagination, grouped buttons) rounds its outer corners with physical
+ * `first:rounded-l` / `last:rounded-r`. In RTL the first item sits on the right, so swap the sides.
+ */
+[dir='rtl'] [class*='first:rounded-l-[inherit]']:first-child:not(:last-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: inherit;
+    border-bottom-right-radius: inherit;
+}
+
+[dir='rtl'] [class*='last:rounded-r-[inherit]']:last-child:not(:first-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: inherit;
+    border-bottom-left-radius: inherit;
+}
+
+/*
+ * Kumo's Table aligns cells with a physical `text-align: left`, so in RTL column titles and their
+ * contents hug the wrong (left) edge. Align them to the inline start (right in Persian).
+ */
+[dir='rtl'] table :is(th, td) {
+    text-align: right;
+}
+
+/*
+ * Kumo's menu items space their leading icon with a physical `mr-2`; in RTL that margin lands on the
+ * outer side and the icon touches the label. Move it to the inline end.
+ */
+[dir='rtl'] [role^='menuitem'] > svg:first-child {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
+
+/* Directional icons (pagination arrows) inside components that don't mirror them for RTL */
+[dir='rtl'] .rtl-mirror-icons button svg {
+    transform: scaleX(-1);
+}
+
+/*
+ * Whole-page switches (smoothSwitch in resources/js/panel/lib/i18n.tsx). Older browsers animate
+ * colours instead (.theme-transition below).
+ *
+ * - .vt-theme: light ↔ dark — the whole page dissolves softly into the other look, like macOS / iOS.
+ * - .vt-fade: language / direction — a quick cross-fade.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 400ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vt-theme::view-transition-old(root),
+.vt-theme::view-transition-new(root) {
+    animation-duration: 800ms;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+/* Text colour animates only where an element sets its own (text-kumo-*, and the root): everything else
+   inherits it frame by frame, so icons (currentColor) and labels change in step with their parent. Animating
+   colour on every element made inherited colours trail behind. */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+    transition:
+        background-color 800ms cubic-bezier(0.45, 0, 0.2, 1),
+        border-color 800ms cubic-bezier(0.45, 0, 0.2, 1),
+        box-shadow 800ms cubic-bezier(0.45, 0, 0.2, 1) !important;
+}
+.theme-transition,
+.theme-transition [class*='text-kumo'] {
+    transition:
+        background-color 800ms cubic-bezier(0.45, 0, 0.2, 1),
+        border-color 800ms cubic-bezier(0.45, 0, 0.2, 1),
+        box-shadow 800ms cubic-bezier(0.45, 0, 0.2, 1),
+        color 800ms cubic-bezier(0.45, 0, 0.2, 1) !important;
+}
+
+/* Header toggles: sun/moon rotate in, the language icon flips. */
+.icon-swap-in {
+    animation: icon-swap-in 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.icon-flip-in {
+    animation: icon-flip-in 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes icon-swap-in {
+    from {
+        opacity: 0;
+        transform: rotate(-120deg) scale(0.4);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes icon-flip-in {
+    from {
+        opacity: 0.3;
+        transform: rotateY(180deg);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.glass-bar,
+.island-pill {
+  /* Telegram-style glass: very see-through, the page blurred and lifted behind it, a bright rim. */
+  background: rgb(255 255 255 / 0.62);
+  -webkit-backdrop-filter: blur(14px) saturate(190%);
+  backdrop-filter: blur(14px) saturate(190%);
+  border: 1px solid rgb(255 255 255 / 0.75);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    inset 0 0 0 0.5px rgb(0 0 0 / 0.04),
+    0 12px 32px -10px rgb(0 0 0 / 0.22),
+    0 2px 8px rgb(0 0 0 / 0.06);
+}
+.glass-pill {
+  background: rgb(0 0 0 / 0.07);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6);
+}
+[data-mode='dark'] .glass-bar,
+[data-mode='dark'] .island-pill {
+  background: rgb(36 36 40 / 0.42);
+  -webkit-backdrop-filter: blur(12px) saturate(170%) brightness(0.85);
+  backdrop-filter: blur(12px) saturate(170%) brightness(0.85);
+  border-color: rgb(255 255 255 / 0.16);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.2),
+    inset 1px 0 0 rgb(255 255 255 / 0.06),
+    0 14px 34px -10px rgb(0 0 0 / 0.7),
+    0 2px 8px rgb(0 0 0 / 0.35);
+}
+
+/* Top bar: no solid strip — the page scrolls under a soft blur that fades out downward (like iOS), and the
+   Island floats on it as the same glass capsule as the tab bar. */
+.glass-header::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 -18px;
+  z-index: -1;
+  pointer-events: none;
+  /* A plain colour (the mask does the fade), so it animates with the page on a theme switch; a gradient
+     would flip at once, out of step with everything else (Safari's colour-fade switch). */
+  background-color: rgb(251 251 251 / 0.8);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent);
+  mask-image: linear-gradient(to bottom, black 60%, transparent);
+}
+[data-mode='dark'] .glass-header::before {
+  background-color: rgb(28 28 30 / 0.8);
+}
+
+/* PageHero: a grainy teal gradient at the card's far end (left in RTL), fading out toward the title. */
+.page-hero__static {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 75%;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to left, #000 35%, transparent);
+    mask-image: linear-gradient(to left, #000 35%, transparent);
+}
+[dir='rtl'] .page-hero__static {
+    -webkit-mask-image: linear-gradient(to right, #000 35%, transparent);
+    mask-image: linear-gradient(to right, #000 35%, transparent);
+}

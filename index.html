@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>پروفایل APN آیفون | گلاینت</title>
+    <meta name="description" content="ساخت پروفایل APN آیفون برای اپراتورهای ایرانی با IPv4 و IPv6 فعال" />
+    <meta name="theme-color" content="#2a8576" />
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/fonts/vazirmatn/vazirmatn.css" />
+    <style>
+      html, body { margin: 0; background: #fafafa; }
+      html[data-mode='dark'], html[data-mode='dark'] body { background: #1c1c1e; }
+    </style>
+    <script>
+      // Theme before first paint (same as the GlyNet panel): a fixed choice, else follow the OS.
+      (function () {
+        var theme = null;
+        try { theme = localStorage.getItem('glynet_theme'); } catch (e) {}
+        var dark = theme === 'light' || theme === 'dark' ? theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-mode', dark ? 'dark' : 'light');
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
