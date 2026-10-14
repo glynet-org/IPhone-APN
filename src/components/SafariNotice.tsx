@@ -1,13 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Dialog } from '@cloudflare/kumo';
-import { CompassIcon, CopyIcon, DeviceMobileIcon, WarningIcon } from '@phosphor-icons/react';
+import { CompassIcon, CopyIcon, DeviceMobileIcon, WarningIcon, XIcon } from '@phosphor-icons/react';
 import type { BrowserInfo } from '../lib/browser';
 
 const SEEN_KEY = 'apn_safari_notice_seen';
+const NON_IOS_KEY = 'apn_non_ios_notice_seen';
 
 const seen = () => {
   try {
     return localStorage.getItem(SEEN_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
+const nonIosSeen = () => {
+  try {
+    return localStorage.getItem(NON_IOS_KEY) === '1';
   } catch {
     return false;
   }
@@ -20,7 +29,27 @@ const seen = () => {
 export function SafariNotice({ browser }: { browser: BrowserInfo }) {
   const wrongBrowser = browser.ios && !browser.safari;
   const [open, setOpen] = useState(() => wrongBrowser || !seen());
+  const [showNonIos, setShowNonIos] = useState(() => !browser.ios && !nonIosSeen());
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!browser.ios) {
+      try {
+        localStorage.setItem(NON_IOS_KEY, '1');
+      } catch {
+        // ignore
+      }
+    }
+  }, [browser.ios]);
+
+  const dismissNonIos = () => {
+    setShowNonIos(false);
+    try {
+      localStorage.setItem(NON_IOS_KEY, '1');
+    } catch {
+      // ignore
+    }
+  };
 
   const close = () => {
     setOpen(false);
@@ -53,10 +82,20 @@ export function SafariNotice({ browser }: { browser: BrowserInfo }) {
           </div>
         </div>
       )}
-      {!browser.ios && (
-        <div className="mb-4 flex items-start gap-3 rounded-2xl bg-kumo-base p-4 text-sm ring ring-kumo-hairline">
-          <DeviceMobileIcon size={20} className="mt-0.5 shrink-0 text-kumo-link" />
-          <p className="leading-6 text-kumo-subtle">این پروفایل مخصوص آیفون و آیپد است. این صفحه را روی آیفون و با Safari باز کنید.</p>
+      {showNonIos && (
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl bg-kumo-base p-4 text-sm ring ring-kumo-hairline">
+          <div className="flex items-start gap-3">
+            <DeviceMobileIcon size={20} className="mt-0.5 shrink-0 text-kumo-link" />
+            <p className="leading-6 text-kumo-subtle">این پروفایل مخصوص آیفون و آیپد است. این صفحه را روی آیفون و با Safari باز کنید.</p>
+          </div>
+          <button
+            type="button"
+            onClick={dismissNonIos}
+            aria-label="بستن پیام"
+            className="shrink-0 rounded-lg p-1 text-kumo-subtle transition-colors hover:bg-kumo-tint hover:text-kumo-default"
+          >
+            <XIcon size={18} />
+          </button>
         </div>
       )}
 

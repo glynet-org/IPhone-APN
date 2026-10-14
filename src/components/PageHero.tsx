@@ -62,7 +62,7 @@ export function PageHero({ title, description, children }: { title: string; desc
       <div className="relative p-5 sm:p-6">
         <div className="max-w-[70%]">
           <h1 className="text-2xl font-extrabold tracking-tight text-kumo-default">{title}</h1>
-          {description && <p className="mt-2 text-sm leading-6 text-kumo-subtle">{description}</p>}
+          {description && <p className="mt-3.5 text-sm leading-6 text-kumo-subtle">{description}</p>}
         </div>
         {/* The page's key content (e.g. the wallet balance), full width under the title. */}
         {children}

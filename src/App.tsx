@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Button, cn } from '@cloudflare/kumo';
 import { DirectionProvider } from '@cloudflare/kumo/primitives/direction-provider';
-import { DownloadSimpleIcon, GlobeHemisphereEastIcon, LockSimpleIcon, PencilSimpleLineIcon, SimCardIcon } from '@phosphor-icons/react';
+import { DownloadSimpleIcon, PencilSimpleLineIcon, SimCardIcon } from '@phosphor-icons/react';
 import { Header } from './components/Header';
 import { InstallGuide } from './components/InstallGuide';
 import { EMPTY_MANUAL, ManualForm, validateManual, type ManualValues } from './components/ManualForm';
@@ -65,24 +65,13 @@ export function App() {
         <main className="mx-auto max-w-xl space-y-5 px-4 pt-4 pb-16">
           <SafariNotice browser={browser} />
 
-          <PageHero title="پروفایل APN آیفون" description="اپراتورت را انتخاب کن یا تنظیمات را خودت وارد کن و پروفایل آماده را نصب کن.">
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="flex items-center gap-1.5 rounded-full bg-kumo-tint/80 px-3 py-1.5 text-xs font-semibold text-kumo-default ring ring-kumo-hairline backdrop-blur-sm">
-                <LockSimpleIcon size={14} weight="fill" className="text-kumo-link" />
-                <bdi>IPv4 + IPv6</bdi> فعال
-              </span>
-              <span className="flex items-center gap-1.5 rounded-full bg-kumo-tint/80 px-3 py-1.5 text-xs font-semibold text-kumo-default ring ring-kumo-hairline backdrop-blur-sm">
-                <GlobeHemisphereEastIcon size={14} className="text-kumo-link" />
-                مخصوص iOS و iPadOS
-              </span>
-            </div>
-          </PageHero>
+          <PageHero title="پروفایل APN آیفون" description="اپراتورت را انتخاب کن یا تنظیمات را خودت وارد کن و پروفایل آماده را نصب کن." />
 
           {/* How to make the profile: two big choices */}
           <div className="grid grid-cols-2 gap-2.5" role="tablist">
             {(
               [
-                ['operator', SimCardIcon, 'اپراتور من', 'تنظیمات آماده'],
+                ['operator', SimCardIcon, 'انتخاب اپراتور', 'تنظیمات آماده'],
                 ['manual', PencilSimpleLineIcon, 'تنظیم دستی', 'مقادیر دلخواه'],
               ] as const
             ).map(([value, Icon, title, hint]) => (
